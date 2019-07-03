@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>登录</title>
+<#include "base.html">
+<!--banner-->
+<div class="banner-top">
+	<div class="container">
+		<h1>登录</h1>
+		<em></em>
+	</div>
+</div>
+<!--login-->
+	<script>
+		function notifyMsg(msg){
+			var notify =  $.notify({
+				// options
+				icon: 'glyphicon glyphicon-warning-sign',
+				title: '',
+				message: msg,
+				target: '_blank'
+			},{
+				// settings
+				element: 'body',
+				position: null,
+				type: "danger",
+				allow_dismiss: true,
+				newest_on_top: true,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 5000,
+				timer: 1000,
+				url_target: '_blank'
+			});
+
+			return notify;
+		}
+
+		if("${flag?js_string}" == 'true') {
+			notifyMsg("${msg?js_string}")
+		}
+
+		if("${flag2?js_string}" == 'true') {
+			window.location='/index?login=true';
+		}
+
+
+	</script>
+<div class="container">
+		<div class="login">
+		
+			<form method="post" action="/login">
+			<div class="col-md-6 login-do">
+				<div class="login-mail">
+					<input type="text" placeholder="用户名" name="username" required="">
+					<i  class="glyphicon glyphicon-user"></i>
+				</div>
+				<div class="login-mail">
+					<input type="password" placeholder="密码" name="password" required="">
+					<i class="glyphicon glyphicon-lock"></i>
+				</div>
+				   <a class="news-letter ">
+						 <label class="checkbox1"><input type="checkbox" name="remember-me" value="true"><i> </i>两周内自动登录</label>
+					   </a>
+				<label class="hvr-skew-backward">
+					<input type="submit" value="登录">
+				</label>
+<!--				<label class="hvr-skew-backward">-->
+				<span style="margin-left: 2%">
+						<a href="retrieve" style="color: #A9A9A9">忘记密码?</a>
+				</span>
+<!--				</label>-->
+
+			</div>
+			<div class="col-md-6 login-right">
+				 <h3>没有账号？注册一个</h3>
+
+				 <p>我们不会将您的个人信息转让给任何公司、组织和个人。我们已采取符合业界标准、合理可行的安全防护措施保护您的信息，防止个人信息遭到未经授权访问、公开披露、使用、修改、损坏或丢失。
+					 例如，在您的浏览器与服务器之间交换数据时受 SSL协议加密保护；我们会使用加密技术提高个人信息的安全性；我们会使用受信赖的保护机制防止个人信息遭到恶意攻击。</p>
+				<a href="register" class=" hvr-skew-backward">注册</a>
+
+			</div>
+			
+			<div class="clearfix"> </div>
+			</form>
+		</div>
+
+</div>
+
+<!--//login-->
+
+			<!--brand-->
+		<div class="container">
+			<div class="brand">
+			</div>
+			</div>
+			<!--//brand-->
+			</div>
+			
+		</div>
+	<!--//content-->
+		<!--//footer-->
+	<div class="footer">
+		<div class="footer-middle">
+			<div class="container">
+				<div class="col-md-3 footer-middle-in">
+					<a href="index"><img src="../static/images/log.png" alt=""></a>
+				</div>
+
+				<div class="col-md-3 footer-middle-in">
+					<h6>INFOMATION</h6>
+					<ul class=" in">
+						<li><a href="contact">联系我们</a></li>
+						<li><a href="#">回到顶部</a></li>
+						<li><a href="404">网站地图</a></li>
+					</ul>
+					<ul class="in in1">
+						<li><a href="wishlist">心愿单</a></li>
+						<li><a href="login">登录</a></li>
+						<li><a href="register">注册</a></li>
+					</ul>
+					<div class="clearfix"></div>
+				</div>
+				<div class="col-md-3 footer-middle-in">
+					<h6>LINK</h6>
+					<ul class="tag-in">
+						<li><a href="https://channel.jd.com/1713-3258.html" target="_blank">京东</a></li>
+						<li><a href="http://book.dangdang.com/" target="_blank">当当</a></li>
+						<li><a href="https://book.tmall.com/" target="_blank">天猫图书</a></li>
+						<li><a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/b/ref=topnav_storetab_b?ie=UTF8&node=658390051" target="_blank">亚马逊</a></li>
+						<li><a href="http://www.bookschina.com/" target="_blank">中国图书网</a></li>
+						<li><a href="https://www.xhsd.com/" target="_blank">新华书店</a></li>
+						<li><a href="http://www.zju.edu.cn/" target="_blank">浙江大学</a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 footer-middle-in">
+					<h6>Newsletter</h6>
+					<span>Sign up for News Letter</span>
+					<form>
+						<input type="text" value="Enter your E-mail" onfocus="this.value='';" onblur="if (this.value == '') {this.value ='Enter your E-mail';}">
+						<input type="submit" value="Subscribe">
+					</form>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+		<!--//footer-->
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+	<script src="../static/js/simpleCart.min.js"> </script>
+<!-- slide -->
+<script src="../static/js/bootstrap.min.js"></script>
+ 
+</body>
+</html>

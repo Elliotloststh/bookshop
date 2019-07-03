@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑资料</title>
+    <#include "base.html">
+    <script>
+        window.onload = function initialize() {
+            getUserName();
+        }
+    </script>
+    <style>
+        .avatarDiv{
+            display:inline-block;
+            margin:5px auto;
+            width:200px;
+            height:200px;
+            border-radius:100px;
+            -webkit-border-radius:100px;
+            -moz-border-radius:100px;
+            border:2px solid #fff;
+            box-shadow:0 0 4px #ccc;
+            overflow:hidden;
+
+        }
+    </style>
+    <!--banner-->
+    <div class="banner-top">
+        <div class="container">
+            <h1>编辑资料</h1>
+            <em></em>
+        </div>
+    </div>
+    <script>
+        function notifyVarMsg(msg, type, icon) {
+            var notify = $.notify({
+                // options
+                icon: icon,
+                title: '',
+                message: msg,
+                target: '_blank'
+            }, {
+                // settings
+                element: 'body',
+                position: null,
+                type: type,
+                allow_dismiss: true,
+                newest_on_top: true,
+                showProgressbar: false,
+                placement: {
+                    from: "top",
+                    align: "right"
+                },
+                animate: {
+                    enter: 'animated fadeInDown',
+                    exit: 'animated fadeOutUp'
+                },
+                offset: 20,
+                spacing: 10,
+                z_index: 1031,
+                delay: 5000,
+                timer: 1000,
+                url_target: '_blank'
+            });
+            return notify;
+        }
+
+        function setAvatarImg() {
+            let avartarImg = document.getElementById("avatarImg");
+            fetch('/api/account/private/getAvatar', {
+                method: 'GET'
+            }).then(res=>{
+                return res.json();
+            }).then(json=>{
+                if(json.code == 200) {
+                    avartarImg.src = json.data.avatar;
+                }
+            })
+        }
+
+        function editProfile() {
+            let gender = $("#gender").val()
+            let phone = $("#phone").val()
+            let description = $("#description").val()
+            let address = $("#address").val()
+
+            fetch('/api/account/private/update', {
+                method: 'POST',
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    gender:gender,
+                    phone: phone,
+                    description:description,
+                    address:address
+                })
+            }).then(res => {
+                return res.json();
+            }).then(res => {
+                if(res.code == 200) {
+                    notifyVarMsg("修改成功！","success",'glyphicon glyphicon-ok');
+                    setTimeout("location.reload()",1000)
+                } else {
+                    notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign');
+                }
+            });
+            return false;
+        }
+    </script>
+    <!--login-->
+    <div class="container" >
+        <div class="login">
+
+            <form onsubmit="return editProfile()" enctype="multipart/form-data">
+                <div class="col-md-4 login-do">
+                    <div class="contentDiv">
+                        <img id="avatarImg" class="avatarDiv" src="../static/images/default-avatar.jpg"/>
+                    </div>
+                    <a data-toggle="modal" data-target="#myModal" class="hvr-skew-backward" style="width: 112px;text-align: center;margin-top: 60px;margin-left: 44px;">更换头像</a>
+                    <div style="margin-top:20px;margin-left: 15px">
+                        <i  class="glyphicon glyphicon-user"></i>
+                        ${username}
+                        <br>
+                        <br>
+                        <i  class="glyphicon glyphicon-envelope"></i>
+                        ${email}
+                        <br>
+
+                    </div>
+                </div>
+                <div class="col-md-8 login-right">
+                    <span>性别</span>
+                    <div class="login-mail" >
+                        <select id="gender" style="min-width: 50%">
+                            ${gender}
+                        </select>
+                    </div>
+                    <span>电话</span>
+                    <div class="login-mail">
+                        <input type="text" placeholder="电话" id="phone" value="${phone}">
+                        <i  class="glyphicon glyphicon-phone"></i>
+                    </div>
+                    <span>简介</span>
+                    <div class="login-mail" >
+                        <input type="text" placeholder="用一句话介绍自己" id="description" value="${description}">
+                        <i  class="glyphicon glyphicon-align-left"></i>
+                    </div>
+                    <span>地址</span>
+                    <div class="login-mail" >
+                        <input type="text" id="address" value="${address}">
+                        <i  class="glyphicon glyphicon-map-marker"></i>
+                    </div>
+                    <input type="submit" class="hvr-skew-backward" value="保存" style="width: 112px;text-align: center;">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        setAvatarImg();
+
+        function changeAvatar() {
+            let formData = new FormData();
+            let input = document.getElementById("avatar")
+            let avatar = input.files[0];
+            formData.append('avatar', avatar);
+
+            fetch('/api/account/private/changeAvatar', {
+                method: 'POST',
+                body: formData
+            }).then(res=> {
+                return res.json()
+            }).then(res=> {
+                if(res.code == 200) {
+                    notifyVarMsg("修改成功","success",'glyphicon glyphicon-ok')
+                    document.getElementById("modal_close_btn").click()
+                    setAvatarImg();
+                } else {
+                    notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign')
+                }
+            });
+
+            return false;
+        }
+    </script>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form onsubmit="return changeAvatar()" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="login-mail">
+                            <input type="file" id="avatar" class="file" name="avatar" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_btn">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交更改</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--//login-->
+    <!--brand-->
+    <div class="container">
+        <div class="brand">
+        </div>
+    </div>
+    <!--//brand-->
+    </div>
+
+    </div>
+    <!--//content-->
+    <!--//footer-->
+    <div class="footer">
+        <div class="footer-middle">
+            <div class="container">
+                <div class="col-md-3 footer-middle-in">
+                    <a href="index"><img src="../static/images/log.png" alt=""></a>
+                </div>
+
+                <div class="col-md-3 footer-middle-in">
+                    <h6>INFOMATION</h6>
+                    <ul class=" in">
+                        <li><a href="contact">联系我们</a></li>
+                        <li><a href="#">回到顶部</a></li>
+                        <li><a href="404">网站地图</a></li>
+                    </ul>
+                    <ul class="in in1">
+                        <li><a href="wishlist">心愿单</a></li>
+                        <li><a href="login">登录</a></li>
+                        <li><a href="register">注册</a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-3 footer-middle-in">
+                    <h6>LINK</h6>
+                    <ul class="tag-in">
+                        <li><a href="https://channel.jd.com/1713-3258.html" target="_blank">京东</a></li>
+                        <li><a href="http://book.dangdang.com/" target="_blank">当当</a></li>
+                        <li><a href="https://book.tmall.com/" target="_blank">天猫图书</a></li>
+                        <li><a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/b/ref=topnav_storetab_b?ie=UTF8&node=658390051" target="_blank">亚马逊</a></li>
+                        <li><a href="http://www.bookschina.com/" target="_blank">中国图书网</a></li>
+                        <li><a href="https://www.xhsd.com/" target="_blank">新华书店</a></li>
+                        <li><a href="http://www.zju.edu.cn/" target="_blank">浙江大学</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 footer-middle-in">
+                    <h6>Newsletter</h6>
+                    <span>Sign up for News Letter</span>
+                    <form>
+                        <input type="text" value="Enter your E-mail" onfocus="this.value='';" onblur="if (this.value == '') {this.value ='Enter your E-mail';}">
+                        <input type="submit" value="Subscribe">
+                    </form>
+                </div>
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+    </div>
+
+    <!--//footer-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+    <script src="../static/js/simpleCart.min.js"> </script>
+    <!-- slide -->
+    <script src="../static/js/bootstrap.min.js"></script>
+
+    </body>
+</html>

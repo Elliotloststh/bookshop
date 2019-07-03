@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuan.bookshop.dao.RecordMapper">
+  <resultMap id="BaseResultMap" type="com.yuan.bookshop.model.Record">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sender_id" jdbcType="BIGINT" property="senderId" />
+    <result column="receiver_id" jdbcType="BIGINT" property="receiverId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="time" jdbcType="BIGINT" property="time" />
+    <result column="is_read" jdbcType="INTEGER" property="isread" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sender_id, receiver_id, content, time, is_read
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yuan.bookshop.model.Record">
+    insert into record (id, sender_id, receiver_id, 
+      content, time, is_read
+      )
+    values (#{id,jdbcType=BIGINT}, #{senderId,jdbcType=BIGINT}, #{receiverId,jdbcType=BIGINT}, 
+      #{content,jdbcType=VARCHAR}, #{time,jdbcType=BIGINT}, #{isread,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yuan.bookshop.model.Record">
+    insert into record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="senderId != null">
+        sender_id,
+      </if>
+      <if test="receiverId != null">
+        receiver_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="isread != null">
+        is_read,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="senderId != null">
+        #{senderId,jdbcType=BIGINT},
+      </if>
+      <if test="receiverId != null">
+        #{receiverId,jdbcType=BIGINT},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=BIGINT},
+      </if>
+      <if test="isread != null">
+        #{isread,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yuan.bookshop.model.Record">
+    update record
+    <set>
+      <if test="senderId != null">
+        sender_id = #{senderId,jdbcType=BIGINT},
+      </if>
+      <if test="receiverId != null">
+        receiver_id = #{receiverId,jdbcType=BIGINT},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=BIGINT},
+      </if>
+      <if test="isread != null">
+        is_read = #{isread,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yuan.bookshop.model.Record">
+    update record
+    set sender_id = #{senderId,jdbcType=BIGINT},
+      receiver_id = #{receiverId,jdbcType=BIGINT},
+      content = #{content,jdbcType=VARCHAR},
+      time = #{time,jdbcType=BIGINT},
+      is_read = #{isread,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

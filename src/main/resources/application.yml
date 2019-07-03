@@ -1,0 +1,38 @@
+server:
+  port: 2443
+  servlet:
+    session:
+      timeout: 7200
+
+spring:
+  datasource:
+    name: bookshop
+    url: jdbc:mysql://10.214.213.42/bookshop
+    username: root
+    password: root
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    prefix: classpath:/templates/
+  freemarker:
+    template-loader-path: classpath:/templates/
+    cache: false
+    suffix: .html
+  mvc:
+    static-path-pattern: /static/**
+
+
+
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  type-aliases-package: com.yuan.bookshop.model
+  configuration:
+    map-underscore-to-camel-case: true
+
+#pagehelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql

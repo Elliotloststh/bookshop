@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>店铺</title>
+    <#include "base.html">
+    <script>
+        window.onload = function initialize() {
+            getUserName();
+        }
+    </script>
+    <!--banner-->
+    <div class="banner-top">
+        <div class="container">
+            <h1>店铺</h1>
+            <em></em>
+        </div>
+    </div>
+    <script>
+        function notifyVarMsg(msg, type, icon) {
+            var notify = $.notify({
+                // options
+                icon: icon,
+                title: '',
+                message: msg,
+                target: '_blank'
+            }, {
+                // settings
+                element: 'body',
+                position: null,
+                type: type,
+                allow_dismiss: true,
+                newest_on_top: true,
+                showProgressbar: false,
+                placement: {
+                    from: "top",
+                    align: "right"
+                },
+                animate: {
+                    enter: 'animated fadeInDown',
+                    exit: 'animated fadeOutUp'
+                },
+                offset: 20,
+                spacing: 10,
+                z_index: 1031,
+                delay: 5000,
+                timer: 1000,
+                url_target: '_blank'
+            });
+            return notify;
+        }
+
+        function putShelves(a, state) {
+            let itemId = document.getElementById("putButton").getAttribute("data-itemId");
+            if(state == 3) {
+                var mymessage=confirm("确认删除吗？");
+                if(mymessage==false) {
+                    return;
+                }
+            }
+            fetch('/api/item/setState', {
+                method: 'POST',
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    itemId: itemId,
+                    state: state
+                })
+            }).then(res=>{
+                return res.json()
+            }).then(res=> {
+                if(res.code == 200) {
+                    notifyVarMsg("操作成功","success",'glyphicon glyphicon-ok');
+                    setTimeout("location.reload()", 1000)
+                } else {
+                    notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign');
+                }
+            });
+
+        }
+
+        function shelveBook() {
+            let formData = new FormData();
+
+            let firstCatalog = $("#firstCatalog").val()
+            let secondCatalog = $("#secondCatalog").val()
+            let ISBN = $("#ISBN").val()
+            let title = $("#title").val()
+            let author = $("#author").val()
+            let press = $("#press").val()
+            let cover = document.getElementById("cover")
+            let originPrice = $("#originPrice").val()
+            let price = $("#price").val()
+            let description = $("#description").val()
+            let link = $("#link").val()
+            let dictionary = $("#directory").val()
+            let brief = $("#brief").val()
+            let deliveryType = $("#deliveryType").val()
+            let address = $("#address").val()
+
+            formData.append("firstCatalog", firstCatalog)
+            formData.append("secondCatalog",secondCatalog)
+            formData.append("ISBN", ISBN)
+            formData.append("title", title)
+            formData.append("author", author)
+            formData.append("press", press)
+            formData.append("cover", cover.files[0])
+            formData.append("originPrice", originPrice)
+            formData.append("price", price)
+            formData.append("brief", brief)
+            formData.append("description",description)
+            formData.append("link", link)
+            formData.append("deliveryType",deliveryType)
+            formData.append("address", address)
+            formData.append("dictionary", dictionary)
+
+            fetch('/api/item/shelve', {
+                method: 'POST',
+                body: formData
+            }).then(res=> {
+                return res.json()
+            }).then(res=> {
+                if(res.code == 200) {
+                    notifyVarMsg("上传成功","success",'glyphicon glyphicon-ok')
+                    document.getElementById("modal_close_btn").click()
+                    setTimeout("location.reload()",100)
+                } else {
+                    notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign')
+                }
+            });
+            return false;
+        }
+
+    </script>
+    <!--login-->
+    <div class="container" >
+        <a data-toggle="modal" data-target="#myModal" href="#" id="buyButton" style="float: left" class="add-to item_add hvr-skew-backward">发布旧书</a>
+        <div class="check-out">
+            <div class="bs-example4" data-example-id="simple-responsive-table">
+                <div class="table-responsive">
+                    <table class="table-heading simpleCart_shelfItem">
+                        <tr>
+                            <th class="table-grid">书籍</th>
+
+                            <th>价格</th>
+                            <th >交易方式</th>
+                            <th>状态</th>
+                        </tr>
+                        ${data}
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form onsubmit="return shelveBook()" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <h4>必填</h4>
+                            <hr>
+                            <span>分类</span>
+                            <div class="login-mail" >
+                                <select id="firstCatalog" onchange="changeCatalog()" style="min-width: 30%">
+
+                                </select>
+                                <select id="secondCatalog" style="min-width: 30%">
+                                </select>
+                            </div>
+                            <script>
+                                fetch('/api/item/catalog/first', {
+                                    method: 'GET',
+                                }).then(res=>{
+                                    return res.json()
+                                }).then(res=>{
+                                    console.log(res);
+                                    if(res.code == 200) {
+                                        var first = document.getElementById("firstCatalog");
+                                        var list = res.data.catalogs;
+
+                                        for(var i in list) {
+                                            first.options.add(new Option(list[i].name,list[i].id));
+                                        }
+                                    }
+                                    first.value = 1;
+                                });
+
+                                function changeCatalog() {
+                                    var y = document.getElementById("secondCatalog");
+
+                                    fetch('/api/item/catalog/second/'+$("#firstCatalog").val(), {
+                                        method: 'GET',
+                                    }).then(res=>{
+                                        return res.json()
+                                    }).then(res=>{
+                                        console.log(res);
+                                        if(res.code == 200) {
+                                            y.options.length = 0; // 清除second下拉框的所有内容
+                                            var list = res.data.catalogs;
+                                            for(var i in list) {
+                                                y.options.add(new Option(list[i].name,list[i].id));
+                                            }
+                                        }
+
+                                    });
+                                }
+
+                                function secondInit() {
+                                    var y = document.getElementById("secondCatalog");
+
+                                    fetch('/api/item/catalog/second/1', {
+                                        method: 'GET',
+                                    }).then(res=>{
+                                        return res.json()
+                                    }).then(res=>{
+                                        console.log(res);
+                                        if(res.code == 200) {
+                                            y.options.length = 0; // 清除second下拉框的所有内容
+                                            var list = res.data.catalogs;
+                                            for(var i in list) {
+                                                y.options.add(new Option(list[i].name,list[i].id));
+                                            }
+                                        }
+
+                                    });
+                                }
+                                secondInit();
+                            </script>
+                            <span>ISBN</span>
+                            <div class="login-mail" >
+                                <input type="text" required="" id="ISBN">
+                            </div>
+                            <span>书名</span>
+                            <div class="login-mail" >
+                                <input type="text" required="" id="title">
+                            </div>
+                            <span>作者</span>
+                            <div class="login-mail" >
+                                <input type="text" required="" id="author">
+                            </div>
+                            <span>出版社</span>
+                            <div class="login-mail" >
+                                <input type="text" required="" id="press">
+                            </div>
+                            <span>封面</span>
+                            <div class="login-mail">
+                                <input type="file" id="cover" class="file" name="cover" required>
+                            </div>
+                            <span>原价</span>
+                            <div class="login-mail" >
+                                <input type="number" style="width: 100%" step="0.01" required="" id="originPrice">
+                            </div>
+                            <span>现价</span>
+                            <div class="login-mail">
+                                <input type="number" style="width: 100%" step="0.01" required="" id="price">
+                            </div>
+                            <span>摘要</span>
+                            <div class="login-mail" >
+                                <textarea onkeydown="if (this.value.length>=100 && event.keyCode!=8){event.returnValue=false}" required="" id="brief" style="width: 100%" rows="10" placeholder="100字以内，卖家备注、旧书情况等"></textarea>
+                            </div>
+                            <span>交易方式</span>
+                            <div class="login-mail" >
+                                <select id="deliveryType" style="min-width: 30%">
+                                    <option value="1">寄送</option>
+                                    <option value="2">线下交易</option>
+                                    <option value="3">均可</option>
+                                </select>
+                            </div>
+                            <br>
+                            <h4>可选</h4>
+                            <hr>
+                            <span>描述</span>
+                            <div class="login-mail" >
+                                <textarea id="description" style="width: 100%" rows="16" placeholder="内容介绍，适宜人群等"></textarea>
+                            </div>
+                            <span>参考链接</span>
+                            <div class="login-mail" >
+                                <input type="url" style="width: 100%" placeholder="如当当网链接" id="link">
+                            </div>
+                            <span>目录</span>
+                            <div class="login-mail" >
+                                <textarea id="directory" style="width: 100%" rows="16" ></textarea>
+                            </div>
+                            <span>发布地点</span>
+                            <div class="login-mail" >
+                                <input type="text" placeholder="如：浙江省杭州市" id="address">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_btn">关闭</button>
+                            <button type="submit" class="btn btn-primary">确认发布</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="center">
+        <ul class="pagination">
+            <li><a href="shelveBook">««</a></li>
+            <li><a href="shelveBook?pageIndex=${lastIndex}">上一页</a></li>
+            <li><a href="shelveBook?pageIndex=${nextIndex}">下一页</a></li>
+            <li><a href="shelveBook?pageIndex=${endIndex}">»»</a></li>
+        </ul>
+    </div>
+    <!--//login-->
+    <!--brand-->
+    <div class="container">
+        <div class="brand">
+        </div>
+    </div>
+    <!--//brand-->
+    </div>
+
+    </div>
+    <!--//content-->
+    <!--//footer-->
+    <div class="footer">
+        <div class="footer-middle">
+            <div class="container">
+                <div class="col-md-3 footer-middle-in">
+                    <a href="index"><img src="../static/images/log.png" alt=""></a>
+                </div>
+
+                <div class="col-md-3 footer-middle-in">
+                    <h6>INFOMATION</h6>
+                    <ul class=" in">
+                        <li><a href="contact">联系我们</a></li>
+                        <li><a href="#">回到顶部</a></li>
+                        <li><a href="404">网站地图</a></li>
+                    </ul>
+                    <ul class="in in1">
+                        <li><a href="wishlist">心愿单</a></li>
+                        <li><a href="login">登录</a></li>
+                        <li><a href="register">注册</a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-3 footer-middle-in">
+                    <h6>LINK</h6>
+                    <ul class="tag-in">
+                        <li><a href="https://channel.jd.com/1713-3258.html" target="_blank">京东</a></li>
+                        <li><a href="http://book.dangdang.com/" target="_blank">当当</a></li>
+                        <li><a href="https://book.tmall.com/" target="_blank">天猫图书</a></li>
+                        <li><a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/b/ref=topnav_storetab_b?ie=UTF8&node=658390051" target="_blank">亚马逊</a></li>
+                        <li><a href="http://www.bookschina.com/" target="_blank">中国图书网</a></li>
+                        <li><a href="https://www.xhsd.com/" target="_blank">新华书店</a></li>
+                        <li><a href="http://www.zju.edu.cn/" target="_blank">浙江大学</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 footer-middle-in">
+                    <h6>Newsletter</h6>
+                    <span>Sign up for News Letter</span>
+                    <form>
+                        <input type="text" value="Enter your E-mail" onfocus="this.value='';" onblur="if (this.value == '') {this.value ='Enter your E-mail';}">
+                        <input type="submit" value="Subscribe">
+                    </form>
+                </div>
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+    </div>
+    <!--//footer-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+    <script src="../static/js/simpleCart.min.js"> </script>
+    <!-- slide -->
+    <script src="../static/js/bootstrap.min.js"></script>
+
+    </body>
+</html>

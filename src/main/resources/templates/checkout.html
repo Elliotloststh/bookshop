@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单</title>
+<#include "base.html">
+	<script>
+		window.onload = function initialize() {
+			getUserName();
+		}
+	</script>
+<!--banner-->
+<div class="banner-top">
+	<div class="container">
+		<h1>我买的</h1>
+		<em></em>
+	</div>
+</div>
+<!--login-->
+	<script>$(document).ready(function(c) {
+					$('.close1').on('click', function(c){
+						$('.cart-header').fadeOut('slow', function(c){
+							$('.cart-header').remove();
+						});
+						});	  
+					});
+			   </script>
+<script>$(document).ready(function(c) {
+					$('.close2').on('click', function(c){
+						$('.cart-header1').fadeOut('slow', function(c){
+							$('.cart-header1').remove();
+						});
+						});	  
+					});
+			   </script>
+			   <script>$(document).ready(function(c) {
+					$('.close3').on('click', function(c){
+						$('.cart-header2').fadeOut('slow', function(c){
+							$('.cart-header2').remove();
+						});
+						});	  
+					});
+			   function notifyVarMsg(msg, type, icon) {
+				   var notify = $.notify({
+					   // options
+					   icon: icon,
+					   title: '',
+					   message: msg,
+					   target: '_blank'
+				   }, {
+					   // settings
+					   element: 'body',
+					   position: null,
+					   type: type,
+					   allow_dismiss: true,
+					   newest_on_top: true,
+					   showProgressbar: false,
+					   placement: {
+						   from: "top",
+						   align: "right"
+					   },
+					   animate: {
+						   enter: 'animated fadeInDown',
+						   exit: 'animated fadeOutUp'
+					   },
+					   offset: 20,
+					   spacing: 10,
+					   z_index: 1031,
+					   delay: 5000,
+					   timer: 1000,
+					   url_target: '_blank'
+				   });
+				   return notify;
+			   }
+
+
+			   function confirmReceive(a) {
+				    let order_id = $(a).attr("data-orderId");
+				    fetch('/api/order/confirmReceive', {
+				   		method: 'POST',
+						headers: {
+							'Access-Control-Allow-Origin': '*',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							orderId:order_id
+						})
+				    }).then(res=>{
+				    	return res.json()
+					}).then(res=> {
+						if(res.code == 200) {
+							notifyVarMsg("收货成功","success",'glyphicon glyphicon-ok');
+							setTimeout("location.reload()", 1000)
+						} else {
+							notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign');
+						}
+					})
+
+			   }
+
+
+			   </script>
+<div class="container">
+	<div class="check-out">
+	<div class="bs-example4" data-example-id="simple-responsive-table">
+    <div class="table-responsive">
+    	    <table class="table-heading simpleCart_shelfItem">
+		  <tr>
+			<th class="table-grid">订单</th>
+					
+			<th>金额</th>
+			<th >交易方式</th>
+			<th>状态</th>
+		  </tr>
+		  ${data}
+	</table>
+	</div>
+	</div>
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<p id="orderId"></p><br>
+						<p id="sellerName"></p><br>
+						<p id="shippingName"></p><br>
+						<p id="shippingCode"></p><br>
+						<p id="createTime"></p><br>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_btn">关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			$("#myModal").on("show.bs.modal", function (e) {
+				var order_id = $(e.relatedTarget).data("orderid");
+				fetch('/api/order/orderInfo/'+order_id, {
+					method: 'GET'
+				}).then(res=>{
+					return res.json();
+				}).then(json=>{
+					if(json.code == 200) {
+						console.log(json)
+						document.getElementById("orderId").innerHTML = '订单号：    '+ order_id;
+						document.getElementById("sellerName").innerHTML = '卖家：      '+json.data.sellerName;
+						document.getElementById("shippingName").innerHTML = '物流公司：  ' + (!json.data.shippingName?'暂无':json.data.shippingName);
+						document.getElementById("shippingCode").innerHTML = '物流单号：  '+ (!json.data.shippingCode?'暂无':json.data.shippingCode);
+						document.getElementById("createTime").innerHTML = '创建时间：  ' + json.data.createTime;
+					}
+				})
+			});
+
+
+		</script>
+
+    </div>
+</div>
+
+<!--//login-->
+	<div class="center">
+		<ul class="pagination">
+			<li><a href="checkout">««</a></li>
+			<li><a href="checkout?pageIndex=${lastIndex}">上一页</a></li>
+			<li><a href="checkout?pageIndex=${nextIndex}">下一页</a></li>
+			<li><a href="checkout?pageIndex=${endIndex}">»»</a></li>
+		</ul>
+	</div>
+<!--brand-->
+		<div class="container">
+			<div class="brand"/>
+			</div>
+			<!--//brand-->
+			</div>
+
+		</div>
+	<!--//content-->
+	<!--//footer-->
+	<div class="footer">
+		<div class="footer-middle">
+			<div class="container">
+				<div class="col-md-3 footer-middle-in">
+					<a href="index"><img src="../static/images/log.png" alt=""></a>
+				</div>
+
+				<div class="col-md-3 footer-middle-in">
+					<h6>INFOMATION</h6>
+					<ul class=" in">
+						<li><a href="contact">联系我们</a></li>
+						<li><a href="#">回到顶部</a></li>
+						<li><a href="404">网站地图</a></li>
+					</ul>
+					<ul class="in in1">
+						<li><a href="wishlist">心愿单</a></li>
+						<li><a href="login">登录</a></li>
+						<li><a href="register">注册</a></li>
+					</ul>
+					<div class="clearfix"></div>
+				</div>
+				<div class="col-md-3 footer-middle-in">
+					<h6>LINK</h6>
+					<ul class="tag-in">
+						<li><a href="https://channel.jd.com/1713-3258.html" target="_blank">京东</a></li>
+						<li><a href="http://book.dangdang.com/" target="_blank">当当</a></li>
+						<li><a href="https://book.tmall.com/" target="_blank">天猫图书</a></li>
+						<li><a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/b/ref=topnav_storetab_b?ie=UTF8&node=658390051" target="_blank">亚马逊</a></li>
+						<li><a href="http://www.bookschina.com/" target="_blank">中国图书网</a></li>
+						<li><a href="https://www.xhsd.com/" target="_blank">新华书店</a></li>
+						<li><a href="http://www.zju.edu.cn/" target="_blank">浙江大学</a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 footer-middle-in">
+					<h6>Newsletter</h6>
+					<span>Sign up for News Letter</span>
+					<form>
+						<input type="text" value="Enter your E-mail" onfocus="this.value='';" onblur="if (this.value == '') {this.value ='Enter your E-mail';}">
+						<input type="submit" value="Subscribe">
+					</form>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+		<!--//footer-->
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+	<script src="../static/js/simpleCart.min.js"> </script>
+<!-- slide -->
+<script src="../static/js/bootstrap.min.js"></script>
+ 
+</body>
+</html>

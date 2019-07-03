@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>心愿单</title>
+	<#include "base.html">
+	<script>
+		window.onload = function initialize() {
+			getUserName();
+		}
+
+		function notifyVarMsg(msg, type, icon){
+			var notify =  $.notify({
+				// options
+				icon: icon,
+				title: '',
+				message: msg,
+				target: '_blank'
+			},{
+				// settings
+				element: 'body',
+				position: null,
+				type: type,
+				allow_dismiss: true,
+				newest_on_top: true,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 5000,
+				timer: 1000,
+				url_target: '_blank'
+			});
+
+			return notify;
+		}
+
+		function createWish() {
+			let title = $("#titleInput").val()
+			let message = $("#messageInput").val()
+
+			fetch('/api/wish/createWish', {
+				method: 'POST',
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					"title":title,
+					"message":message
+				})
+			}).then(res => {
+				return res.json();
+			}).then(res => {
+				if(res.code == 200) {
+					notifyVarMsg("发布成功","success",'glyphicon glyphicon-ok');
+					document.getElementById("modal_close_btn").click()
+					setTimeout("location.reload()",1000)
+				} else {
+					notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign');
+				}
+			});
+		}
+	</script>
+<!--banner-->
+<div class="banner-top">
+	<div class="container">
+		<h1>心愿单</h1>
+		<em></em>
+	</div>
+</div>
+<!--login-->
+	<div class="container">
+		<a data-toggle="modal" data-target="#myModal" href="#" id="buyButton" style="float: left" class="add-to item_add hvr-skew-backward">发布求购</a>
+		<div class="check-out">
+			<div class="bs-example4" data-example-id="simple-responsive-table">
+				<div class="table-responsive">
+					<table class="table-heading simpleCart_shelfItem">
+						<tr>
+							<th class="table-grid">标题</th>
+							<th>发布人</th>
+						</tr>
+
+						${data}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form onsubmit="return createWish()">
+					<div class="modal-body">
+						<span>标题</span>
+						<div class="login-mail" >
+							<input type="text" required="" id="titleInput">
+						</div>
+						<span>内容</span>
+						<div class="login-mail" >
+							<textarea id="messageInput" required="" style="width: 100%" rows="16" ></textarea>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_btn">关闭</button>
+						<button type="submit" class="btn btn-primary">确认发布</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+					<div class="modal-body">
+						<p id="username"></p>
+						<hr>
+						<p id="title"></p>
+						<hr>
+						<p id="message"></p><br>
+					</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$("#myModal2").on("show.bs.modal", function (e) {
+			var id = $(e.relatedTarget).data("id");
+			fetch('/api/wish/wishInfo/'+id, {
+				method: 'GET'
+			}).then(res=>{
+				return res.json();
+			}).then(json=>{
+				if(json.code == 200) {
+					console.log(json)
+					document.getElementById("username").innerHTML = '发布者：    '+ json.data.username;
+					document.getElementById("title").innerHTML = json.data.title;
+					document.getElementById("message").innerHTML = json.data.message;
+				}
+			})
+		});
+
+
+	</script>
+	<div class="center">
+		<ul class="pagination">
+			<li><a href="wishlist">««</a></li>
+			<li><a href="wishlist?pageIndex=${lastIndex}">上一页</a></li>
+			<li><a href="wishlist?pageIndex=${nextIndex}">下一页</a></li>
+			<li><a href="wishlist?pageIndex=${endIndex}">»»</a></li>
+		</ul>
+	</div>
+<!--//login-->
+<!--brand-->
+		<div class="container">
+			<div class="brand">
+				<div class="clearfix"></div>
+			</div>
+			</div>
+			<!--//brand-->
+			</div>
+			
+		</div>
+	<!--//content-->
+	<!--//footer-->
+	<div class="footer">
+		<div class="footer-middle">
+			<div class="container">
+				<div class="col-md-3 footer-middle-in">
+					<a href="index"><img src="../static/images/log.png" alt=""></a>
+				</div>
+
+				<div class="col-md-3 footer-middle-in">
+					<h6>INFOMATION</h6>
+					<ul class=" in">
+						<li><a href="contact">联系我们</a></li>
+						<li><a href="#">回到顶部</a></li>
+						<li><a href="404">网站地图</a></li>
+					</ul>
+					<ul class="in in1">
+						<li><a href="wishlist">心愿单</a></li>
+						<li><a href="login">登录</a></li>
+						<li><a href="register">注册</a></li>
+					</ul>
+					<div class="clearfix"></div>
+				</div>
+				<div class="col-md-3 footer-middle-in">
+					<h6>LINK</h6>
+					<ul class="tag-in">
+						<li><a href="https://channel.jd.com/1713-3258.html" target="_blank">京东</a></li>
+						<li><a href="http://book.dangdang.com/" target="_blank">当当</a></li>
+						<li><a href="https://book.tmall.com/" target="_blank">天猫图书</a></li>
+						<li><a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/b/ref=topnav_storetab_b?ie=UTF8&node=658390051" target="_blank">亚马逊</a></li>
+						<li><a href="http://www.bookschina.com/" target="_blank">中国图书网</a></li>
+						<li><a href="https://www.xhsd.com/" target="_blank">新华书店</a></li>
+						<li><a href="http://www.zju.edu.cn/" target="_blank">浙江大学</a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 footer-middle-in">
+					<h6>Newsletter</h6>
+					<span>Sign up for News Letter</span>
+					<form>
+						<input type="text" value="Enter your E-mail" onfocus="this.value='';" onblur="if (this.value == '') {this.value ='Enter your E-mail';}">
+						<input type="submit" value="Subscribe">
+					</form>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+		<!--//footer-->
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+	<script src="../static/js/simpleCart.min.js"> </script>
+<!-- slide -->
+<script src="../static/js/bootstrap.min.js"></script>
+ 
+</body>
+</html>

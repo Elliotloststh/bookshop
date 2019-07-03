@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>找回密码</title>
+<#include "base.html">
+    <script>
+        window.onload = function initialize() {
+
+        }
+    </script>
+<!--banner-->
+<div class="banner-top">
+    <div class="container">
+        <h1>Retrieve</h1>
+        <em></em>
+    </div>
+</div>
+    <script>
+        function notifyVarMsg(msg, type, icon) {
+            var notify = $.notify({
+                // options
+                icon: icon,
+                title: '',
+                message: msg,
+                target: '_blank'
+            }, {
+                // settings
+                element: 'body',
+                position: null,
+                type: type,
+                allow_dismiss: true,
+                newest_on_top: true,
+                showProgressbar: false,
+                placement: {
+                    from: "top",
+                    align: "right"
+                },
+                animate: {
+                    enter: 'animated fadeInDown',
+                    exit: 'animated fadeOutUp'
+                },
+                offset: 20,
+                spacing: 10,
+                z_index: 1031,
+                delay: 5000,
+                timer: 1000,
+                url_target: '_blank'
+            });
+            return notify;
+        }
+
+        function checkEmail(){
+            let email=$('#email').val();
+            if(email == "") {
+                notifyMsg("请输入邮箱","warning",'glyphicon glyphicon-warning-sign')
+                return
+            }
+            let reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+            if(reg.test(email)){
+                sendVcode();
+            }else{
+                notifyVarMsg("请输入正确的邮箱","warning",'glyphicon glyphicon-warning-sign')
+            }
+        }
+
+        function sendVcode() {
+            var time = 60;
+
+            let email = document.getElementById("email").value;
+            fetch('/api/account/public/retrieveCode', {
+                method: 'POST',
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({email:email})
+            }).then(res => {
+                return res.json();
+            }).then(json => {
+                console.log(json)
+                if(json.code == 200) {
+                    console.log("ok")
+                    let timer = setInterval(function(){
+                        time = time -1;
+                        let btn = this.vcode;
+                        btn.innerHTML = time + "秒";
+                        btn.style.pointerEvents = "none";
+                        if (time==0) {
+                            time = 60;
+                            clearInterval(timer);
+                            btn.innerHTML = "发送验证码";
+                            btn.style.pointerEvents = "";
+                        }
+                    },1000);
+                } else {
+                    notifyVarMsg(json.data.msg, "danger",'glyphicon glyphicon-warning-sign')
+                }
+            });
+        }
+
+        function retrieve() {
+            let email = $('#email').val()
+            let password = $('#password').val()
+            let code = $('#code').val()
+            let password2 = $('#password2').val()
+
+            if(password != password2) {
+                notifyVarMsg("两次密码输入不一致","warning",'glyphicon glyphicon-warning-sign')
+                return false;
+            }
+
+            fetch('/api/account/public/retrieve', {
+                method: 'POST',
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    code: code
+                })
+            }).then(res => {
+                return res.json();
+            }).then(res => {
+                if(res.code == 200) {
+                    notifyVarMsg("密码找回成功！将在2s后返回登录页...","success",'glyphicon glyphicon-ok');
+                    setTimeout("window.location = \'/login\'",2000)
+                } else if (res.code == 250){
+                    notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign');
+                }
+            });
+            return false;
+        }
+    </script>
+<!--login-->
+    <div class="container" >
+        <div class="login">
+            <form onsubmit="return retrieve()">
+                <div style="width: 50%;margin: auto;min-width: 350px">
+                    <div class="login-mail" >
+                        <input type="text" placeholder="邮箱" required="" id="email">
+                        <i class="glyphicon glyphicon-envelope"></i>
+                    </div>
+                    <div class="login-mail">
+                        <input type="password" placeholder="密码" minlength="6" required="" id="password">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+
+                    <div class="login-mail">
+                        <input type="password" placeholder="重复密码" minlength="6" required="" id="password2">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <div >
+                        <input class="login-mail" style="width: 60%" type="text" placeholder="验证码" required="" id="code">
+                        <span>
+                            <a href="javascript:void(0);" onclick="checkEmail()" class="hvr-skew-backward" id="vcode" style="width: 112px;text-align: center">发送验证码</a>
+                        </span>
+                    </div>
+                    <input class="hvr-skew-backward" type="submit" value="找回密码">
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+<!--//login-->
+    <!--brand-->
+    <div class="container">
+        <div class="brand">
+        </div>
+    </div>
+    <!--//brand-->
+    </div>
+
+    </div>
+    <!--//content-->
+    <!--//footer-->
+    <div class="footer">
+        <div class="footer-middle">
+            <div class="container">
+                <div class="col-md-3 footer-middle-in">
+                    <a href="index"><img src="../static/images/log.png" alt=""></a>
+                </div>
+
+                <div class="col-md-3 footer-middle-in">
+                    <h6>INFOMATION</h6>
+                    <ul class=" in">
+                        <li><a href="contact">联系我们</a></li>
+                        <li><a href="#">回到顶部</a></li>
+                        <li><a href="404">网站地图</a></li>
+                    </ul>
+                    <ul class="in in1">
+                        <li><a href="wishlist">心愿单</a></li>
+                        <li><a href="login">登录</a></li>
+                        <li><a href="register">注册</a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-3 footer-middle-in">
+                    <h6>LINK</h6>
+                    <ul class="tag-in">
+                        <li><a href="https://channel.jd.com/1713-3258.html" target="_blank">京东</a></li>
+                        <li><a href="http://book.dangdang.com/" target="_blank">当当</a></li>
+                        <li><a href="https://book.tmall.com/" target="_blank">天猫图书</a></li>
+                        <li><a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/b/ref=topnav_storetab_b?ie=UTF8&node=658390051" target="_blank">亚马逊</a></li>
+                        <li><a href="http://www.bookschina.com/" target="_blank">中国图书网</a></li>
+                        <li><a href="https://www.xhsd.com/" target="_blank">新华书店</a></li>
+                        <li><a href="http://www.zju.edu.cn/" target="_blank">浙江大学</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 footer-middle-in">
+                    <h6>Newsletter</h6>
+                    <span>Sign up for News Letter</span>
+                    <form>
+                        <input type="text" value="Enter your E-mail" onfocus="this.value='';" onblur="if (this.value == '') {this.value ='Enter your E-mail';}">
+                        <input type="submit" value="Subscribe">
+                    </form>
+                </div>
+                <div class="clearfix"> </div>
+            </div>
+        </div>
+    </div>
+    <!--//footer-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+    <script src="../static/js/simpleCart.min.js"> </script>
+    <!-- slide -->
+    <script src="../static/js/bootstrap.min.js"></script>
+
+    </body>
+</html>
