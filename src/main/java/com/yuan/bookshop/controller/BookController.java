@@ -33,7 +33,7 @@ public class BookController {
         Item item = new Item();
         try {
             String name = AliyunUtils.uploadImg(input.getCover());
-            String url = AliyunUtils.getImgUrl(name,"");
+            String url = AliyunUtils.getImgUrl(name,AliyunUtils.styleCover);
             item.setCover(url);
         } catch (Exception e) {
             response = ApiResponse.serverInternalError();

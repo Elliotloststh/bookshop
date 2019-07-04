@@ -68,9 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutSuccessUrl("/login")
-                .permitAll()
-                .and()
-                .rememberMe();
+                .permitAll();
 
 
         // 关闭CSRF跨域

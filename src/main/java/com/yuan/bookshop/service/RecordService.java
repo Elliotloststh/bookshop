@@ -47,4 +47,8 @@ public class RecordService {
     public List<Long> selectAllReceiverId(Long selfId) {
         return recordMapper.selectAllReceiverId(selfId);
     }
+
+    public void setRead(Long selfId, Long oppositeId) {
+        recordMapper.setRead(selfId, oppositeId);
+    }
 }

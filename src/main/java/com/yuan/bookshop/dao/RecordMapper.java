@@ -25,14 +25,17 @@ public interface RecordMapper {
     @Select("select count(*) from record where receiver_id=#{selfId} and is_read=0")
     int countAllUnread(Long selfId);
 
-    @Select("select distinct sender_id from record where receiver_id=#{selfId}")
+    @Select("select sender_id from record where receiver_id=#{selfId} group by sender_id order by max(time) desc")
     List<Long> selectAllSenderId(Long selfId);
 
-    @Select("select distinct receiver_id from record where sender_id=#{selfId}")
+    @Select("select receiver_id from record where sender_id=#{selfId} group by receiver_id order by max(time) desc")
     List<Long> selectAllReceiverId(Long selfId);
 
     @Select("select count(*) from record where sender_id=#{oppositeId} and receiver_id=#{selfId} and is_read=0")
     int countUnread(Long selfId, Long oppositeId);
 
     int updateByPrimaryKey(Record record);
+
+    @Select("update record set is_read=1 where sender_id=#{oppositeId} and receiver_id=#{selfId}")
+    int setRead(Long selfId, Long oppositeId);
 }

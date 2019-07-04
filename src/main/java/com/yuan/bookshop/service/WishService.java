@@ -47,7 +47,7 @@ public class WishService {
                     "\t\t\t</td>\n" +
                     "\t\t\t<td class=\"item_price\">" + account.getUsername() + "</td>\n" +
                     "\t\t\t<td class=\"add-check\"><a data-toggle=\"modal\" data-target=\"#myModal2\" data-id=\"" + id + "\" class=\"item_add hvr-skew-backward\" >详情</a></td>\n" +
-                    "\t\t\t<td ><a class=\"item_add hvr-skew-backward\" href=\"#\" >联系Ta</a></td>\n" +
+                    "\t\t\t<td ><a class=\"item_add hvr-skew-backward\" onclick=\"chatConnect("+wish.getUserId()+")\" >联系Ta</a></td>\n" +
                     "\t\t  </tr>";
             res.append(template);
         }

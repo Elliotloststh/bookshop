@@ -74,6 +74,27 @@
 			return false;
 
 		}
+
+		function chatConnect(id) {
+			fetch('/api/chat/connect', {
+				method: 'POST',
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					oppositeId: id
+				})
+			}).then(res=>{
+				return res.json()
+			}).then(res=> {
+				if(res.code == 200) {
+					window.open("chat")
+				} else {
+					notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign')
+				}
+			})
+		}
 	</script>
 <!--banner-->
 <div class="banner-top">
@@ -131,7 +152,7 @@
     });
 	</script>
 			<a data-toggle="modal" data-target="#myModal" href="#" id="buyButton" class="add-to item_add hvr-skew-backward">购买</a>
-			<a href="#" class="add-to item_add hvr-skew-backward" style="margin-right: 50px">联系卖家：${sellerName}</a>
+			<a onclick="chatConnect(${sellerId})" class="add-to item_add hvr-skew-backward" style="margin-right: 50px">联系卖家：${sellerName}</a>
 
 			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				<div class="modal-dialog">

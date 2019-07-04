@@ -42,6 +42,27 @@
 			return notify;
 		}
 
+		function chatConnect(id) {
+			fetch('/api/chat/connect', {
+				method: 'POST',
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					oppositeId: id
+				})
+			}).then(res=>{
+				return res.json()
+			}).then(res=> {
+				if(res.code == 200) {
+					window.open("chat")
+				} else {
+					notifyVarMsg(res.data.msg,"danger",'glyphicon glyphicon-warning-sign');
+				}
+			})
+		}
+
 		function createWish() {
 			let title = $("#titleInput").val()
 			let message = $("#messageInput").val()

@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/account")
@@ -69,7 +71,7 @@ public class AccountController {
         account.setUsername(input.getUsername());
         account.setPhoneNumber(input.getPhone());
         account.setEmail(input.getEmail());
-        account.setAvatar("https://jhcdn.oss-cn-hangzhou.aliyuncs.com/BS/default-avatar.jpg?x-oss-process=image/auto-orient,1/resize,m_lfit,w_500/quality,q_90/circle,r_250");
+        account.setAvatar("https://jhcdn.oss-cn-hangzhou.aliyuncs.com/BS/default-avatar.jpg?x-oss-process=style/style1");
         try {
             account.setPassword(CommonUtils.md5(input.getPassword()));
         } catch (NoSuchAlgorithmException e) {
@@ -270,10 +272,16 @@ public class AccountController {
     }
 
     public static void main(String[] args) {
-        DecimalFormat df = new DecimalFormat("#.00");
-        System.out.println(df.format(89));
-//        SendEmailUtils sendEmailUtils = new SendEmailUtils();
-//        sendEmailUtils.sendRegisterCode("3160102443@zju.edu.cn", "test");
+        List<Long> oppositeIds = new ArrayList<>();
+        oppositeIds.add(10L);
+        oppositeIds.add(20L);
+        List<Long> senderIds = new ArrayList<>();
+        senderIds.add(10L);
+        senderIds.add(30L);
+        oppositeIds.removeAll(senderIds);
+        oppositeIds.addAll(senderIds);
+
+        System.out.println(oppositeIds);
     }
 }
 

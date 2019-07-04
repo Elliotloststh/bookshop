@@ -174,6 +174,7 @@ public class WebController {
         map.put("title",item.getTitle());
         map.put("authorAndPress",item.getAuthor()+" 著        " + item.getPress());
         map.put("brief", item.getBrief());
+        map.put("sellerId", seller.getId());
         map.put("sellerName", seller.getUsername());
         String introduction = "书名：《"+item.getTitle()+"》"+
                 "\n作者："+item.getAuthor()+ "        ISBN："+item.getIsbn() +
@@ -285,9 +286,11 @@ public class WebController {
         return "store";
     }
 
-    @RequestMapping("/myBook")
-    public String myBook(ModelMap map) {
-        return "myBook";
+    @RequestMapping("/chat")
+    public String chat(ModelMap map , HttpServletRequest request) {
+
+
+        return "chat";
     }
 
     @RequestMapping("/search")

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>消息中心</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/reset.min.css">
+    <link rel="stylesheet" href="/static/css/style2.css">
+    <script src="../static/js/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+    <div class="container">
+        <div class="left">
+            <div class="top">  联系人列表
+            </div>
+            <ul class="people">
+            </ul>
+        </div>
+        <div class="right">
+            <div class="top"><span>To: <span class="name" id="currentName"></span></span></div>
+
+        </div>
+    </div>
+</div>
+<script>
+
+</script>
+
+<script>
+    function getHistory() {
+        $.ajax({
+            url: '/api/chat/getHistory',
+            type: 'GET',
+            async: false,
+            success : function(json) {
+                console.log(json);
+                let people = document.getElementsByClassName('people')[0]
+                let chat = document.getElementsByClassName('right')[0]
+                var list = json.data.history;
+                for(var i in list) {
+                    var li = document.createElement('ul');
+                    li.className = 'person';
+                    li.setAttribute('data-chat', list[i].id);
+                    var img = document.createElement('img');
+                    img.src = list[i].avatar;
+                    img.alt = "";
+                    li.appendChild(img);
+                    var span1 = document.createElement('span');
+                    span1.className = 'name';
+                    span1.innerHTML = list[i].name;
+                    li.appendChild(span1);
+                    var span2 = document.createElement('span');
+                    span2.className = 'time';
+                    span2.innerHTML = list[i].unReadNumber!=0?list[i].unReadNumber:'';
+                    li.appendChild(span2);
+                    var span3 = document.createElement('span');
+                    span3.className = 'preview';
+                    span3.innerHTML = list[i].preview;
+                    li.appendChild(span3);
+                    people.appendChild(li);
+
+                    var div1 = document.createElement('div');
+                    div1.className = 'chat';
+                    div1.setAttribute('data-chat',list[i].id);
+                    let lines = list[i].lines;
+                    for(var j in lines) {
+                        if(lines[j].msg ==  null) {
+                            continue;
+                        }
+                        var div2 = document.createElement('div');
+                        div2.innerHTML = lines[j].msg;
+                        div2.className = lines[j].type == 0 ? "bubble me" : "bubble you";
+                        div1.appendChild(div2);
+                    }
+                    chat.appendChild(div1);
+                    if(i==0) {
+                        document.getElementById("currentName").innerHTML = list[i].name
+                        document.querySelector('.chat[data-chat=\''+list[i].id+'\']').classList.add('active-chat');
+                        document.querySelector('.person[data-chat=\''+list[i].id+'\']').classList.add('active');
+                        document.querySelector('ul.people .active').querySelector('.time').innerHTML = ''
+                        haveRead(list[i].id)
+                    }
+                }
+
+                var write = document.createElement('div')
+                write.className = 'write'
+                write.innerHTML = '<input type="text" id="word" onkeyup=" if(event.keyCode==13) { sendMsg() }"/>'
+                chat.appendChild(write);
+
+            }
+        })
+    }
+    getHistory()
+    var friends = {
+            list: document.querySelector('ul.people'),
+            all: document.querySelectorAll('.left .person'),
+            name: '' },
+
+        chat = {
+            container: document.querySelector('.container .right'),
+            current: document.querySelector('.container .right .active-chat'),
+            person: document.querySelector('.container .right .active-chat').getAttribute('data-chat'),
+            name: document.querySelector('.container .right .top .name') };
+
+
+    friends.all.forEach(function (f) {
+        f.addEventListener('mousedown', function () {
+            f.classList.contains('active') || setActiveChat(f);
+        });
+    });
+
+    function setActiveChat(f) {
+        friends.list.querySelector('.active').classList.remove('active');
+        f.classList.add('active');
+        f.querySelector('.time').innerHTML = ''
+        chat.person = f.getAttribute('data-chat');
+        chat.current.classList.remove('active-chat');
+        chat.container.querySelector('[data-chat="' + chat.person + '"]').classList.add('active-chat');
+        chat.current = chat.container.querySelector('.active-chat');
+        friends.name = f.querySelector('.name').innerText;
+        chat.name.innerHTML = friends.name;
+        haveRead(chat.person)
+    }
+
+    function haveRead(id) {
+        fetch('/api/chat/haveRead', {
+            method: 'POST',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                oppositeId: id
+            })
+        }).then(res=>{
+            res.json()
+        }).then(res=> {
+
+        })
+    }
+
+    function sendMsg(){
+        let msg = $("#word").val();
+        let id = chat.current.getAttribute("data-chat")
+
+        if(msg == ''){
+            return''
+        }
+
+        fetch('/api/chat/send', {
+            method: 'POST',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                oppositeId: id,
+                msg: msg
+            })
+        }).then(res=> {
+            return res.json()
+        }).then(res=> {
+            if(res.code == 200) {
+                var newMsg = document.createElement('div');
+                newMsg.innerHTML = msg;
+                newMsg.className = "bubble me";
+                chat.current.appendChild(newMsg);
+            }
+        })
+
+
+
+        $("#word").val('')
+    }
+</script>
+</body>
+</html>

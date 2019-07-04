@@ -7,7 +7,7 @@
     <result column="receiver_id" jdbcType="BIGINT" property="receiverId" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="time" jdbcType="BIGINT" property="time" />
-    <result column="is_read" jdbcType="INTEGER" property="isread" />
+    <result column="is_read" jdbcType="INTEGER" property="isRead" />
   </resultMap>
   <sql id="Base_Column_List">
     id, sender_id, receiver_id, content, time, is_read
@@ -27,7 +27,7 @@
       content, time, is_read
       )
     values (#{id,jdbcType=BIGINT}, #{senderId,jdbcType=BIGINT}, #{receiverId,jdbcType=BIGINT}, 
-      #{content,jdbcType=VARCHAR}, #{time,jdbcType=BIGINT}, #{isread,jdbcType=INTEGER}
+      #{content,jdbcType=VARCHAR}, #{time,jdbcType=BIGINT}, #{isRead,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.yuan.bookshop.model.Record">
@@ -48,7 +48,7 @@
       <if test="time != null">
         time,
       </if>
-      <if test="isread != null">
+      <if test="isRead != null">
         is_read,
       </if>
     </trim>
@@ -68,8 +68,8 @@
       <if test="time != null">
         #{time,jdbcType=BIGINT},
       </if>
-      <if test="isread != null">
-        #{isread,jdbcType=INTEGER},
+      <if test="isRead != null">
+        #{isRead,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -88,8 +88,8 @@
       <if test="time != null">
         time = #{time,jdbcType=BIGINT},
       </if>
-      <if test="isread != null">
-        is_read = #{isread,jdbcType=INTEGER},
+      <if test="isRead != null">
+        is_read = #{isRead,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -100,7 +100,7 @@
       receiver_id = #{receiverId,jdbcType=BIGINT},
       content = #{content,jdbcType=VARCHAR},
       time = #{time,jdbcType=BIGINT},
-      is_read = #{isread,jdbcType=INTEGER}
+      is_read = #{isRead,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

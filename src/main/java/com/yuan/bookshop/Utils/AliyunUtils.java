@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class AliyunUtils {
     public static final String styleAvatar = "?x-oss-process=style/style1";
-    public static final String styleCover = "?x-oss-process=image/auto-orient,1/resize,m_lfit,w_500/quality,q_90/circle,r_250";
+    public static final String styleCover = "?x-oss-process=style/coverstyle";
     private static final OSSClient ossClient = AliyunUtils.init();
     private static final String bucketName = "jhcdn";
     private static final String filedir = "BS/";
